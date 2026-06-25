@@ -9,18 +9,19 @@ is what makes faithfulness / context-recall meaningful.
 Usage:
     python -m src.evaluation.run_eval --output results/eval_results.json
 """
+
 from __future__ import annotations
 
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 from src.config import settings
 from src.evaluation.ragas_eval import score_samples
 
 
-def load_golden_dataset(path: str) -> List[Dict[str, Any]]:
+def load_golden_dataset(path: str) -> list[dict[str, Any]]:
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
     if not isinstance(data, list) or not data:
@@ -28,11 +29,11 @@ def load_golden_dataset(path: str) -> List[Dict[str, Any]]:
     return data
 
 
-def collect_samples(golden: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def collect_samples(golden: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Run each golden question through the graph and gather RAGAS inputs."""
     from src.graph.graph import answer_query
 
-    samples: List[Dict[str, Any]] = []
+    samples: list[dict[str, Any]] = []
     total = len(golden)
     for i, item in enumerate(golden, start=1):
         question = item["question"]
@@ -42,14 +43,14 @@ def collect_samples(golden: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             {
                 "question": question,
                 "answer": result["answer"],
-                "contexts": result["contexts"],   # real retrieved chunk texts
+                "contexts": result["contexts"],  # real retrieved chunk texts
                 "ground_truth": item["ground_truth"],
             }
         )
     return samples
 
 
-def run_evaluation(golden_path: str, output_path: str) -> Dict[str, float]:
+def run_evaluation(golden_path: str, output_path: str) -> dict[str, float]:
     settings.require("openai_api_key", "cohere_api_key")
 
     golden = load_golden_dataset(golden_path)

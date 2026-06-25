@@ -1,4 +1,5 @@
 """Tests for the Qdrant retriever (with injected fakes — no network)."""
+
 from types import SimpleNamespace
 
 from src.retrieval.retriever import QdrantRetriever

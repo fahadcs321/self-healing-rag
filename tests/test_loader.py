@@ -1,4 +1,5 @@
 """Tests for document loading and chunking."""
+
 import pytest
 
 from src.ingestion.loader import chunk_documents, load_documents

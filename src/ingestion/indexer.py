@@ -7,11 +7,12 @@ Usage:
     python -m src.ingestion.indexer --source data/raw --collection documents
     python -m src.ingestion.indexer --source data/raw --recreate
 """
+
 from __future__ import annotations
 
 import argparse
 import uuid
-from typing import Any, List
+from typing import Any
 
 from langchain_core.documents import Document
 
@@ -46,7 +47,7 @@ def ensure_collection(client: Any, name: str, dim: int, recreate: bool = False) 
         print(f"Collection '{name}' already exists — upserting into it.")
 
 
-def _to_points(chunks: List[Document], vectors: List[List[float]]) -> List[Any]:
+def _to_points(chunks: list[Document], vectors: list[list[float]]) -> list[Any]:
     from qdrant_client.models import PointStruct
 
     return [
@@ -59,7 +60,7 @@ def _to_points(chunks: List[Document], vectors: List[List[float]]) -> List[Any]:
                 "page": chunk.metadata.get("page"),
             },
         )
-        for chunk, vector in zip(chunks, vectors)
+        for chunk, vector in zip(chunks, vectors, strict=True)
     ]
 
 

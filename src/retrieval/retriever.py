@@ -6,10 +6,11 @@ Heavy dependencies (``sentence-transformers``, ``qdrant-client``) are imported
 lazily inside ``__init__`` so importing this module is cheap and side-effect free
 — unit tests can construct a retriever with injected fakes instead.
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Any, List
+from typing import Any
 
 from langchain_core.documents import Document
 
@@ -49,7 +50,7 @@ class QdrantRetriever:
         return self._client
 
     # ── Public API ─────────────────────────────────────────────────────────
-    def search(self, query: str, top_k: int | None = None) -> List[Document]:
+    def search(self, query: str, top_k: int | None = None) -> list[Document]:
         """Return up to ``top_k`` chunks ranked by cosine similarity."""
         top_k = top_k or settings.retrieve_top_k
 
@@ -61,7 +62,7 @@ class QdrantRetriever:
         hits = self._query(vector, top_k)
         return [self._hit_to_document(h) for h in hits]
 
-    def _query(self, vector: List[float], top_k: int) -> List[Any]:
+    def _query(self, vector: list[float], top_k: int) -> list[Any]:
         """Run the vector search, supporting both new and old qdrant-client APIs.
 
         qdrant-client >= 1.12 replaced ``search`` with ``query_points`` (which

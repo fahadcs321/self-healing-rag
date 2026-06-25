@@ -5,9 +5,10 @@ The pipeline isolates heavy/networked dependencies (the LLM, the embedding model
 Qdrant, Cohere) behind small seams, so tests inject simple in-memory fakes and run
 fast, offline and deterministically — no API keys, no Docker, no model downloads.
 """
+
 from __future__ import annotations
 
-from typing import Callable, List
+from collections.abc import Callable
 
 import pytest
 from langchain_core.documents import Document
@@ -24,10 +25,10 @@ class FakeLLM:
         def __init__(self, content: str) -> None:
             self.content = content
 
-    def __init__(self, responses: List[str] | Callable[[str], str]) -> None:
+    def __init__(self, responses: list[str] | Callable[[str], str]) -> None:
         self._responses = responses
         self._calls = 0
-        self.prompts: List[str] = []
+        self.prompts: list[str] = []
 
     def invoke(self, prompt: str):  # noqa: D401 - mimics ChatOpenAI.invoke
         self.prompts.append(prompt)
@@ -39,13 +40,13 @@ class FakeLLM:
         return self._Msg(content)
 
 
-def make_docs(*pairs: tuple[str, str]) -> List[Document]:
+def make_docs(*pairs: tuple[str, str]) -> list[Document]:
     """Build Documents from (text, source) pairs."""
     return [Document(page_content=t, metadata={"source": s}) for t, s in pairs]
 
 
 @pytest.fixture
-def docs() -> List[Document]:
+def docs() -> list[Document]:
     return make_docs(
         ("RAGAS measures faithfulness and answer relevancy.", "ragas.txt"),
         ("LangGraph enables cyclic, stateful graphs.", "langgraph.txt"),

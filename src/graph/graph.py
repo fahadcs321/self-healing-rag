@@ -8,17 +8,18 @@ graph.py — Assemble and compile the self-healing RAG graph.
 
 Public entry point: ``answer_query(question)``.
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Any, Dict
+from typing import Any
 
 from langgraph.graph import END, StateGraph
 
 from src.graph.edges import (
-    REWRITE_QUERY,
     RETURN_ANSWER,
     RETURN_IDK,
+    REWRITE_QUERY,
     route_after_critique,
 )
 from src.graph.nodes import (
@@ -91,7 +92,7 @@ def _initial_state(question: str) -> RAGState:
     }
 
 
-def answer_query(question: str) -> Dict[str, Any]:
+def answer_query(question: str) -> dict[str, Any]:
     """Run a question through the full graph and return a clean result dict."""
     if not question or not question.strip():
         raise ValueError("Question must not be empty.")

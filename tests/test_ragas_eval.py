@@ -1,4 +1,5 @@
 """Tests for the RAGAS aggregation helpers (RAGAS itself is not invoked)."""
+
 import pytest
 
 from src.evaluation import ragas_eval

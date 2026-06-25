@@ -4,9 +4,10 @@ embedder.py — Turn text into dense vectors with sentence-transformers.
 A thin wrapper that keeps the model name and vector dimension in one place and
 loads the (heavy) model lazily on first use.
 """
+
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any
 
 from src.config import settings
 
@@ -29,13 +30,13 @@ class Embedder:
     def dim(self) -> int:
         return settings.embedding_dim
 
-    def encode(self, texts: List[str], show_progress: bool = False) -> List[List[float]]:
+    def encode(self, texts: list[str], show_progress: bool = False) -> list[list[float]]:
         """Embed a batch of texts, returning a list of plain float lists."""
         vectors = self.model.encode(texts, show_progress_bar=show_progress)
         if hasattr(vectors, "tolist"):
             vectors = vectors.tolist()
         return vectors
 
-    def encode_one(self, text: str) -> List[float]:
+    def encode_one(self, text: str) -> list[float]:
         """Embed a single string."""
         return self.encode([text])[0]

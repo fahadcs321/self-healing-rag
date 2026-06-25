@@ -11,9 +11,10 @@ A "sample" is a dict with these keys:
     contexts: list[str]     # the actual retrieved chunk texts the answer used
     ground_truth: str
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 # A faithfulness score below this counts the sample as a hallucination.
 HALLUCINATION_THRESHOLD = 0.5
@@ -48,7 +49,7 @@ def _hallucination_rate(scores: Any) -> float:
     return float((series < HALLUCINATION_THRESHOLD).mean())
 
 
-def score_samples(samples: List[Dict[str, Any]]) -> Dict[str, float]:
+def score_samples(samples: list[dict[str, Any]]) -> dict[str, float]:
     """Run RAGAS over ``samples`` and return aggregate metrics."""
     if not samples:
         raise ValueError("No samples to evaluate.")

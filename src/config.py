@@ -5,6 +5,7 @@ All tunables live here so the rest of the codebase never touches ``os.getenv``
 directly. Values are read from the environment (and a local ``.env`` file if
 present) exactly once and exposed through the ``settings`` singleton.
 """
+
 from __future__ import annotations
 
 import os
@@ -56,9 +57,7 @@ class Settings:
         default_factory=lambda: os.getenv("QDRANT_URL", "http://localhost:6333")
     )
     qdrant_api_key: str | None = field(default_factory=lambda: os.getenv("QDRANT_API_KEY"))
-    collection: str = field(
-        default_factory=lambda: os.getenv("QDRANT_COLLECTION", "documents")
-    )
+    collection: str = field(default_factory=lambda: os.getenv("QDRANT_COLLECTION", "documents"))
 
     # ── Reranking (Cohere) ─────────────────────────────────────────────────
     cohere_api_key: str | None = field(default_factory=lambda: os.getenv("COHERE_API_KEY"))

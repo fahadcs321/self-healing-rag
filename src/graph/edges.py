@@ -4,6 +4,7 @@ edges.py — Conditional routing between nodes.
 The single decision point of the graph: after the critic grades the answer, where
 do we go next? This is what makes the pipeline *self-healing* rather than linear.
 """
+
 from __future__ import annotations
 
 from src.config import settings

@@ -1,5 +1,5 @@
 """Tests for the FastAPI app (the graph is faked via monkeypatch)."""
-import pytest
+
 from fastapi.testclient import TestClient
 
 from src.api.main import app

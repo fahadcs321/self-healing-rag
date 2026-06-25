@@ -5,11 +5,12 @@ Keeping nodes as small functions that delegate to the retrieval/LLM layers makes
 every step independently unit-testable (inject fakes for the retriever, reranker
 and LLM). The LLM is created lazily so importing this module needs no API key.
 """
+
 from __future__ import annotations
 
 import json
 from functools import lru_cache
-from typing import Any, List
+from typing import Any
 
 from langchain_core.documents import Document
 
@@ -62,10 +63,7 @@ def get_llm() -> Any:
 
         return ChatAnthropic(model=model, temperature=temperature)
 
-    raise ValueError(
-        f"Unknown LLM_PROVIDER '{provider}'. Use one of: "
-        f"{', '.join(DEFAULT_MODELS)}."
-    )
+    raise ValueError(f"Unknown LLM_PROVIDER '{provider}'. Use one of: {', '.join(DEFAULT_MODELS)}.")
 
 
 def _active_query(state: RAGState) -> str:
@@ -73,7 +71,7 @@ def _active_query(state: RAGState) -> str:
     return state.get("rewritten_query") or state["query"]
 
 
-def _format_context(docs: List[Document]) -> str:
+def _format_context(docs: list[Document]) -> str:
     return "\n\n---\n\n".join(d.page_content for d in docs)
 
 
@@ -82,6 +80,7 @@ def _invoke_llm(prompt: str) -> str:
 
 
 # ── Nodes ────────────────────────────────────────────────────────────────────
+
 
 def retrieve(state: RAGState) -> RAGState:
     """Dense search Qdrant for candidate chunks."""
@@ -149,6 +148,7 @@ def return_idk(state: RAGState) -> RAGState:
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def _parse_critique(raw: str) -> tuple[str, str]:
     """Parse the critic's JSON, tolerating markdown fences and stray prose."""

@@ -1,4 +1,5 @@
 """Tests for the graph nodes (LLM / retriever / reranker all faked)."""
+
 import pytest
 
 from src.graph import nodes
@@ -91,6 +92,7 @@ def test_return_idk_is_honest():
 
 
 # ── _parse_critique robustness ────────────────────────────────────────────────
+
 
 def test_parse_plain_json():
     assert _parse_critique('{"verdict": "hallucinated", "reason": "x"}')[0] == "hallucinated"

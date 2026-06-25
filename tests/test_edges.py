@@ -1,4 +1,5 @@
 """Tests for the conditional routing logic."""
+
 from src.config import settings
 from src.graph.edges import (
     RETURN_ANSWER,

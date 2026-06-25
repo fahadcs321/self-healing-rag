@@ -6,10 +6,11 @@ Reranking is the single biggest precision lever in this pipeline: it re-scores t
 keeps only the best ``top_n``. The Cohere client is imported lazily so this module
 imports without the SDK installed (handy for tests).
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Any, List
+from typing import Any
 
 from langchain_core.documents import Document
 
@@ -33,9 +34,9 @@ class CohereReranker:
     def rerank(
         self,
         query: str,
-        documents: List[Document],
+        documents: list[Document],
         top_n: int | None = None,
-    ) -> List[Document]:
+    ) -> list[Document]:
         """Return the ``top_n`` most relevant documents, best first.
 
         Falls back to the original order (truncated) if there is nothing to rank.
@@ -52,7 +53,7 @@ class CohereReranker:
             top_n=min(top_n, len(texts)),
         )
 
-        ranked: List[Document] = []
+        ranked: list[Document] = []
         for result in response.results:
             doc = documents[result.index]
             # Attach the rerank score without mutating the caller's metadata.

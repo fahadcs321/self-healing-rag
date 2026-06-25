@@ -8,15 +8,15 @@ at least their threshold; ``max`` metrics must be at most their threshold.
 Usage:
     python -m src.evaluation.threshold --results results/eval_results.json
 """
+
 from __future__ import annotations
 
 import argparse
 import json
 import sys
-from typing import Dict, Tuple
 
 # metric -> (direction, threshold). "min" = floor, "max" = ceiling.
-GATES: Dict[str, Tuple[str, float]] = {
+GATES: dict[str, tuple[str, float]] = {
     "faithfulness": ("min", 0.80),
     "answer_relevancy": ("min", 0.75),
     "context_recall": ("min", 0.70),
@@ -25,7 +25,7 @@ GATES: Dict[str, Tuple[str, float]] = {
 }
 
 
-def evaluate_gates(results: Dict[str, float]) -> bool:
+def evaluate_gates(results: dict[str, float]) -> bool:
     """Print a report and return True iff every gate passes."""
     passed = True
     print("\n── CI Quality Gate ───────────────────────────────────")

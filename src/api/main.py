@@ -8,6 +8,7 @@ The graph (and therefore the heavy model stack) is imported lazily inside the
 handler so the app process — and the test suite — can start without the full
 dependency tree or API keys present.
 """
+
 from __future__ import annotations
 
 import logging

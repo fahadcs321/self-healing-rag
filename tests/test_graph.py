@@ -1,4 +1,5 @@
 """End-to-end graph tests with faked retrieval and LLM — exercises the loop."""
+
 import pytest
 
 from src.graph import graph as graph_module
@@ -49,11 +50,11 @@ def test_self_heals_then_succeeds(monkeypatch):
     _use_llm(
         monkeypatch,
         [
-            "Paris.",                                              # generate (wrong)
+            "Paris.",  # generate (wrong)
             '{"verdict": "hallucinated", "reason": "not in context"}',  # critique
-            "capital city of Denmark",                            # rewrite_query
-            "Copenhagen.",                                        # generate (retry)
-            '{"verdict": "grounded", "reason": "supported"}',      # critique
+            "capital city of Denmark",  # rewrite_query
+            "Copenhagen.",  # generate (retry)
+            '{"verdict": "grounded", "reason": "supported"}',  # critique
         ],
     )
     result = answer_query("What is the capital of Denmark?")

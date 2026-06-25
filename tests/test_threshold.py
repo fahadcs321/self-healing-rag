@@ -1,4 +1,5 @@
 """Tests for the CI quality gate."""
+
 import json
 
 from src.evaluation.threshold import GATES, check, evaluate_gates

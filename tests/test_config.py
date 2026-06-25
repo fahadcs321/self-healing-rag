@@ -1,4 +1,5 @@
 """Tests for the configuration layer."""
+
 import pytest
 
 from src.config import Settings, get_settings

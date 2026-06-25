@@ -1,4 +1,5 @@
 """Tests for the Cohere reranker (with an injected fake client)."""
+
 from types import SimpleNamespace
 
 from src.retrieval.reranker import CohereReranker
@@ -15,8 +16,7 @@ class FakeCohere:
         self.last_kwargs = {"model": model, "query": query, "top_n": top_n}
         order = list(range(len(documents)))[::-1][:top_n]
         results = [
-            SimpleNamespace(index=i, relevance_score=1.0 - pos * 0.1)
-            for pos, i in enumerate(order)
+            SimpleNamespace(index=i, relevance_score=1.0 - pos * 0.1) for pos, i in enumerate(order)
         ]
         return SimpleNamespace(results=results)
 
