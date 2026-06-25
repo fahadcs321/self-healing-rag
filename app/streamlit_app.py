@@ -24,7 +24,9 @@ import streamlit as st  # noqa: E402
 try:
     for _key, _val in st.secrets.items():
         if isinstance(_val, str):
-            os.environ.setdefault(_key, _val)
+            # .strip() guards against trailing newlines/spaces pasted into secrets,
+            # a common cause of "Invalid API Key" 401s.
+            os.environ[_key] = _val.strip()
 except Exception:
     pass  # No secrets.toml locally is fine; .env / real env vars are used instead.
 
