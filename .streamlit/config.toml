@@ -7,7 +7,11 @@ textColor = "#F8FAFC"
 font = "sans serif"
 
 [server]
-runOnSave = true
+# Disable the source-file watcher in production. It introspects every installed
+# module to enable hot-reload, which needlessly imports heavy optional libraries
+# (transformers' vision models -> torchvision) and spams the logs with import
+# errors. Not needed on Streamlit Cloud.
+fileWatcherType = "none"
 
 [browser]
 gatherUsageStats = false
