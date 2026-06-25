@@ -49,11 +49,65 @@ def _hallucination_rate(scores: Any) -> float:
     return float((series < HALLUCINATION_THRESHOLD).mean())
 
 
+def _install_ragas_compat() -> None:
+    """Shim Vertex AI modules ragas imports but langchain v1 removed.
+
+    ragas 0.4.x unconditionally imports langchain_community's Vertex AI classes,
+    which the langchain v1 community package no longer ships, so plain
+    ``import ragas`` raises ModuleNotFoundError. We never use Vertex AI, so inject
+    lightweight placeholders only when the real modules are genuinely absent.
+    """
+    import sys
+    import types
+
+    for modname, attrs in (
+        ("langchain_community.chat_models.vertexai", ["ChatVertexAI"]),
+        ("langchain_community.llms.vertexai", ["VertexAI"]),
+    ):
+        if modname in sys.modules:
+            continue
+        try:
+            __import__(modname)
+        except Exception:
+            module = types.ModuleType(modname)
+            for attr in attrs:
+                setattr(module, attr, type(attr, (), {}))
+            sys.modules[modname] = module
+
+
+def _ragas_models():
+    """Build the (llm, embeddings) RAGAS should use, from the project config.
+
+    RAGAS defaults to OpenAI for its judge LLM and embeddings. We instead point it
+    at the same chat model the pipeline uses (e.g. Groq) and a local
+    sentence-transformers embedding model, so evaluation needs no OpenAI key.
+    """
+    _install_ragas_compat()
+    from ragas.embeddings import LangchainEmbeddingsWrapper
+    from ragas.llms import LangchainLLMWrapper
+
+    from src.config import settings
+    from src.graph.nodes import get_llm
+
+    llm = LangchainLLMWrapper(get_llm())
+
+    try:
+        from langchain_huggingface import HuggingFaceEmbeddings
+    except ImportError:  # older stacks expose it via langchain_community
+        from langchain_community.embeddings import HuggingFaceEmbeddings
+
+    embeddings = LangchainEmbeddingsWrapper(
+        HuggingFaceEmbeddings(model_name=settings.embedding_model)
+    )
+    return llm, embeddings
+
+
 def score_samples(samples: list[dict[str, Any]]) -> dict[str, float]:
     """Run RAGAS over ``samples`` and return aggregate metrics."""
     if not samples:
         raise ValueError("No samples to evaluate.")
 
+    _install_ragas_compat()
     from datasets import Dataset
     from ragas import evaluate
     from ragas.metrics import (
@@ -72,9 +126,14 @@ def score_samples(samples: list[dict[str, Any]]) -> dict[str, float]:
         }
     )
 
+    # Drive RAGAS with the project's configured LLM and a local embedding model,
+    # so evaluation works on any provider (Groq, etc.) and never requires OpenAI.
+    llm, embeddings = _ragas_models()
     scores = evaluate(
         dataset,
         metrics=[faithfulness, answer_relevancy, context_recall, context_precision],
+        llm=llm,
+        embeddings=embeddings,
     )
 
     return {

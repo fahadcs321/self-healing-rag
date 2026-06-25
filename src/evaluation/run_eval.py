@@ -51,7 +51,7 @@ def collect_samples(golden: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def run_evaluation(golden_path: str, output_path: str) -> dict[str, float]:
-    settings.require("openai_api_key", "cohere_api_key")
+    settings.require(settings.llm_key_attr, "cohere_api_key")
 
     golden = load_golden_dataset(golden_path)
     print(f"Running pipeline over {len(golden)} golden questions...")

@@ -74,6 +74,16 @@ class Settings:
     chunk_size: int = field(default_factory=lambda: _get_int("CHUNK_SIZE", 512))
     chunk_overlap: int = field(default_factory=lambda: _get_int("CHUNK_OVERLAP", 64))
 
+    @property
+    def llm_key_attr(self) -> str:
+        """Name of the settings attribute holding the active provider's API key."""
+        return {
+            "openai": "openai_api_key",
+            "groq": "groq_api_key",
+            "google": "google_api_key",
+            "anthropic": "anthropic_api_key",
+        }.get(self.llm_provider, "openai_api_key")
+
     def require(self, *names: str) -> None:
         """Raise a clear error if any required secret is missing.
 
