@@ -4,10 +4,13 @@
 > queries, and refuses to answer when it can't ground a response** — with automated
 > RAGAS quality gates blocking regressions in CI/CD.
 
+[![Live Demo](https://img.shields.io/badge/live%20demo-streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://self-healing-rags.streamlit.app)
 [![RAG Quality Gate](https://github.com/fahadcs321/self-healing-rag/actions/workflows/eval_ci.yml/badge.svg)](https://github.com/fahadcs321/self-healing-rag/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Built with LangGraph](https://img.shields.io/badge/built%20with-LangGraph-orange)](https://langchain-ai.github.io/langgraph/)
+
+**▶ Live demo: [self-healing-rags.streamlit.app](https://self-healing-rags.streamlit.app)**
 
 Built as a **stateful, cyclic LangGraph agent** — not a linear chain.
 
