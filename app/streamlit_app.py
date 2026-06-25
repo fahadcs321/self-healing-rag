@@ -18,6 +18,16 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 import streamlit as st  # noqa: E402
 
+# Bridge Streamlit Cloud secrets into the environment BEFORE importing the
+# pipeline, so src.config (which reads os.getenv) picks them up. Streamlit does
+# not reliably expose secrets as env vars, so we do it explicitly.
+try:
+    for _key, _val in st.secrets.items():
+        if isinstance(_val, str):
+            os.environ.setdefault(_key, _val)
+except Exception:
+    pass  # No secrets.toml locally is fine; .env / real env vars are used instead.
+
 from src.graph.graph import answer_query  # noqa: E402
 
 # ── Page setup ────────────────────────────────────────────────────────────────
@@ -252,7 +262,7 @@ def render_result(result: dict) -> None:
         "rgba(245,158,11,0.12)",
     )
     status_icon = icon("check") if grounded else icon("alert")
-    status_text = "Grounded answer" if grounded else "Refused — could not ground"
+    status_text = "Grounded answer" if grounded else "Refused, could not ground"
 
     st.markdown(f'<div class="label">{icon("check", 14)} Answer</div>', unsafe_allow_html=True)
     st.markdown(
@@ -323,13 +333,18 @@ if ask and st.session_state.question.strip():
             result = answer_query(st.session_state.question)
         render_result(result)
     except Exception as exc:  # noqa: BLE001
+        from src.config import settings
+
         st.markdown(
             f"""
 <div class="card" style="border-color:#EF4444">
   <span class="pill" style="color:#EF4444; background:rgba(239,68,68,0.12)">{icon('alert')} Pipeline error</span>
   <div class="answer-card mono" style="font-size:.9rem; color:#FCA5A5">{_escape(str(exc))}</div>
-  <div class="reason" style="margin-top:.8rem">Is Qdrant running (<code>make qdrant</code>),
-  the index built (<code>make ingest</code>), and are your API keys set in <code>.env</code>?</div>
+  <div class="reason" style="margin-top:.8rem">Active LLM provider:
+  <code>{_escape(settings.llm_provider)}</code>. Check that the matching API key, plus
+  <code>COHERE_API_KEY</code> and your <code>QDRANT_URL</code> / <code>QDRANT_API_KEY</code>,
+  are set (in Streamlit secrets when deployed, or <code>.env</code> locally), and that the
+  Qdrant collection has been ingested.</div>
 </div>
 """,
             unsafe_allow_html=True,
