@@ -1,0 +1,26 @@
+Self-Healing RAG and the LLM-as-Judge Pattern
+
+A self-healing RAG pipeline adds a feedback loop to the standard retrieve-generate
+flow so the system can detect and recover from its own failures rather than emitting
+a confident but wrong answer.
+
+The core of the loop is a critique step that uses the LLM-as-judge pattern. In this
+pattern a language model evaluates another model's output instead of a human
+annotator. Here the judge reads the question, the retrieved context, and the
+generated answer, and returns a verdict: grounded, hallucinated, or insufficient.
+
+A grounded verdict means every claim in the answer is supported by the context, so
+the answer is returned to the user. A hallucinated verdict means the answer asserts
+facts not present in the context. An insufficient verdict means the context genuinely
+lacks the information needed, in which case the system honestly says it does not know
+rather than fabricating an answer.
+
+When the verdict is hallucinated, the system rewrites the query to be more specific
+and retries retrieval, hoping to surface better context on the second attempt. To
+avoid infinite loops, the number of retries is capped, commonly at two. After the
+retry budget is exhausted, the system falls back to an honest "I don't know" instead
+of returning an answer it could not ground.
+
+This design is inspired by research on Self-RAG and Corrective RAG (CRAG), which
+showed that adding self-reflection and corrective retrieval steps significantly
+reduces hallucination rates compared with naive, linear RAG pipelines.

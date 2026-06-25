@@ -1,0 +1,24 @@
+Dense, Sparse, and Hybrid Retrieval
+
+Retrieval systems find the documents most relevant to a query. There are two broad
+families of methods: dense and sparse.
+
+Dense retrieval represents both the query and the documents as embedding vectors in
+a continuous space and measures similarity with a metric such as cosine similarity.
+Because embeddings capture meaning, dense retrieval can match a query to a passage
+even when they share no exact words, which makes it strong at semantic matching.
+
+Sparse retrieval represents text as high-dimensional sparse vectors over the
+vocabulary and scores documents with term-based methods such as BM25. BM25 weights
+matches by term frequency and inverse document frequency. Sparse retrieval excels at
+exact keyword matching, rare terms, and precise names or identifiers.
+
+Hybrid retrieval combines dense and sparse scores to get the best of both: the
+semantic recall of embeddings and the lexical precision of BM25. The two score lists
+are usually merged with a fusion method such as reciprocal rank fusion.
+
+After retrieval, a reranking step can further improve precision. A reranker is a
+cross-encoder that jointly reads the query and each candidate passage and assigns a
+relevance score, reordering the candidates so the most relevant ones come first.
+Reranking is more accurate than the first-stage retriever but too expensive to run
+over the whole corpus, so it is applied only to the top candidates.

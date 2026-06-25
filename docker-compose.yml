@@ -1,0 +1,27 @@
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: self-healing-rag-qdrant
+    ports:
+      - "6333:6333"   # REST + dashboard
+      - "6334:6334"   # gRPC
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+
+  api:
+    build: .
+    container_name: self-healing-rag-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      QDRANT_URL: http://qdrant:6333
+    depends_on:
+      - qdrant
+    # Start the API only when you explicitly run `docker compose --profile app up`.
+    profiles: ["app"]
+
+volumes:
+  qdrant_storage:

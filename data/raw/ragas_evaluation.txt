@@ -1,0 +1,26 @@
+Evaluating RAG with RAGAS
+
+RAGAS is a framework for evaluating retrieval-augmented generation pipelines without
+relying on large amounts of human-labelled data. It uses LLMs to score the quality
+of both the retrieval and the generation stages along several complementary metrics.
+
+Faithfulness measures whether the claims made in the generated answer are supported
+by the retrieved context. An answer is faithful when every statement it makes can be
+inferred from the context; unsupported claims lower the faithfulness score. This is
+the primary metric for detecting hallucinations.
+
+Answer relevancy measures whether the answer actually addresses the user's question.
+An answer can be faithful to the context yet still fail to answer what was asked;
+answer relevancy penalises responses that are off-topic, incomplete, or evasive.
+
+Context recall measures whether the retrieval step fetched all the information needed
+to answer the question, comparing the retrieved context against the ground-truth
+answer. Low context recall indicates the retriever is missing relevant chunks.
+
+Context precision measures whether the retrieved chunks are actually relevant, and
+whether the relevant ones are ranked near the top. Low context precision indicates
+the retriever is returning noise.
+
+Together these four metrics separate retrieval problems from generation problems. If
+faithfulness is high but context recall is low, the retriever is the bottleneck; if
+context is good but faithfulness is low, the generator is hallucinating.

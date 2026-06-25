@@ -1,0 +1,25 @@
+LangGraph: Stateful, Cyclic Agent Workflows
+
+LangGraph is a library for building stateful, multi-step applications with large
+language models. It models an application as a graph of nodes and edges. Each node
+is a function that reads and updates a shared state object, and edges define how
+control flows from one node to the next.
+
+The crucial difference between LangGraph and a standard LangChain chain is cycles.
+A LangChain chain is a linear, directed acyclic sequence of steps. LangGraph allows
+cycles, which means a workflow can loop back on itself, retry a step, and make
+conditional decisions based on the current state. This is what makes it suitable for
+agentic systems that need to reflect, critique, and self-correct.
+
+State in LangGraph is typically defined as a TypedDict. Every node receives the
+current state and returns a partial update that is merged into it. Because each node
+is a small, pure function of the state, nodes are easy to test in isolation.
+
+Edges come in two kinds. A normal edge always routes from one node to a fixed next
+node. A conditional edge calls a routing function that inspects the state and returns
+the name of the next node, enabling branching logic such as "if the answer is
+hallucinated, go to the rewrite node, otherwise return the answer."
+
+A graph is assembled by adding nodes, adding edges, setting an entry point, and then
+compiling it. The compiled graph exposes an invoke method that runs the workflow
+from the entry point until it reaches the special END node.

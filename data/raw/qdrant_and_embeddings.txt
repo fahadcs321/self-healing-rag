@@ -1,0 +1,25 @@
+Qdrant and Sentence Embeddings
+
+Qdrant is an open-source vector database designed for storing and searching
+high-dimensional embedding vectors at scale. Data in Qdrant is organised into
+collections, where each collection has a fixed vector dimension and a distance
+metric such as cosine, dot product, or Euclidean distance.
+
+Each item stored in a collection is called a point. A point has an id, a vector, and
+an optional payload, which is arbitrary JSON metadata such as the original text, the
+source document name, and the page number. Payloads let an application return the
+human-readable text alongside the vector match and filter results by metadata.
+
+To search, a client sends a query vector and Qdrant returns the points whose vectors
+are nearest to it under the collection's distance metric, ranked by similarity score.
+Qdrant also supports sparse vectors, which makes hybrid dense-plus-sparse search
+possible within a single database.
+
+The vectors stored in Qdrant come from an embedding model. Sentence-transformers is
+a popular library of such models. The all-MiniLM-L6-v2 model is a common default: it
+is small and fast, runs on a CPU, and produces 384-dimensional embeddings, making it
+a practical choice for local development and prototyping.
+
+When building a collection, the vector dimension configured in Qdrant must match the
+output dimension of the embedding model. For all-MiniLM-L6-v2 that dimension is 384;
+using a different model usually means recreating the collection with the new size.
