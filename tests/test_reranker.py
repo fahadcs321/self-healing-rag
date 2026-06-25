@@ -2,6 +2,9 @@
 
 from types import SimpleNamespace
 
+import pytest
+
+from src.retrieval import reranker as reranker_mod
 from src.retrieval.reranker import CohereReranker
 from tests.conftest import make_docs
 
@@ -34,6 +37,45 @@ def test_rerank_reorders_and_trims():
 def test_rerank_empty_returns_empty():
     reranker = CohereReranker(client=FakeCohere())
     assert reranker.rerank("q", [], top_n=4) == []
+
+
+class _RateLimitError(Exception):
+    status_code = 429
+
+
+class FlakyCohere:
+    """Raises a 429 for the first ``fail_times`` calls, then succeeds."""
+
+    def __init__(self, fail_times):
+        self.fail_times = fail_times
+        self.calls = 0
+
+    def rerank(self, model, query, documents, top_n):
+        self.calls += 1
+        if self.calls <= self.fail_times:
+            raise _RateLimitError("rate limited")
+        results = [SimpleNamespace(index=0, relevance_score=0.9)]
+        return SimpleNamespace(results=results)
+
+
+def test_retries_on_rate_limit_then_succeeds(monkeypatch):
+    monkeypatch.setattr(reranker_mod.time, "sleep", lambda _s: None)  # no real waiting
+    fake = FlakyCohere(fail_times=2)
+    reranker = CohereReranker(client=fake)
+
+    ranked = reranker.rerank("q", make_docs(("only", "a")), top_n=1)
+
+    assert fake.calls == 3  # 2 failures + 1 success
+    assert ranked[0].page_content == "only"
+
+
+def test_gives_up_after_max_retries(monkeypatch):
+    monkeypatch.setattr(reranker_mod.time, "sleep", lambda _s: None)
+    fake = FlakyCohere(fail_times=999)
+    reranker = CohereReranker(client=fake)
+
+    with pytest.raises(_RateLimitError):
+        reranker.rerank("q", make_docs(("only", "a")), top_n=1)
 
 
 def test_top_n_capped_to_available_docs():
