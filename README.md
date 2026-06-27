@@ -85,7 +85,7 @@ independently unit-testable. See [`src/graph/`](src/graph/).
 | Vector DB      | **Qdrant** (Docker)           | Fast vector search, free local setup       |
 | Embeddings     | **sentence-transformers**     | `all-MiniLM-L6-v2` — 384-dim, CPU, free    |
 | Reranking      | **Cohere Rerank**             | Cross-encoder; biggest precision lever     |
-| LLM            | **Groq + Llama 3.3 70B**      | ast, free-tier, swappable via env var      |
+| LLM            | **Groq + Llama 3.3 70B**      | fast, free-tier, swappable via env var     |
 | Evaluation     | **RAGAS**                     | Faithfulness, relevancy, recall, precision |
 | CI/CD          | **GitHub Actions**            | Blocks merges on quality regression        |
 | API            | **FastAPI**                   | `/query` + `/health`                       |
